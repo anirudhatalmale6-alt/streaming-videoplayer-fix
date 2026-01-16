@@ -41,7 +41,7 @@ export default function VODLibrary() {
   const lastProgressRef = useRef<{ time: number; bytes: number }>({ time: 0, bytes: 0 });
 
   const queryClient = useQueryClient();
-  const { user, token } = useAuthStore();
+  const { user, token, cdnDomain } = useAuthStore();
 
   // Check if user can upload
   useEffect(() => {
@@ -87,7 +87,7 @@ export default function VODLibrary() {
     const upload = new tus.Upload(selectedFile, {
       endpoint: '/api/tus/',
       retryDelays: [0, 3000, 5000, 10000, 20000],
-      chunkSize: 5 * 1024 * 1024, // 5MB chunks
+      chunkSize: 50 * 1024 * 1024, // 50MB chunks for large files
       metadata: {
         filename: selectedFile.name,
         filetype: selectedFile.type,
@@ -237,7 +237,10 @@ export default function VODLibrary() {
 
   const playVideo = (file: any) => {
     // Open VOD in embed player style
-    const playerUrl = `/embed/${file.id}?type=vod&autoplay=true&muted=false`;
+    const useCdn = user?.cdn_enabled && cdnDomain;
+    const playerUrl = useCdn
+      ? `/embed/${file.id}?type=vod&autoplay=true&muted=false&cdn=${cdnDomain}`
+      : `/embed/${file.id}?type=vod&autoplay=true&muted=false`;
     window.open(playerUrl, "_blank", "width=1280,height=720");
   };
 
