@@ -860,7 +860,7 @@ export default function VideoPlayer({
                     {displayQuality === -1 && <span className="text-xs">✓</span>}
                   </button>
                   {qualities.length > 0 ? (
-                    qualities
+                    [...qualities]
                       .sort((a, b) => b.height - a.height)
                       .map((q) => (
                         <button
