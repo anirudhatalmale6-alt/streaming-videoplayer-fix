@@ -41,6 +41,7 @@ export default function VideoPlayer({
   const containerRef = useRef<HTMLDivElement>(null);
   const hlsRef = useRef<Hls | null>(null);
   const controlsTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const userSelectedQualityRef = useRef<number | null>(null); // Track user's manual quality selection
 
   const [isPlaying, setIsPlaying] = useState(false);
   const [isMuted, setIsMuted] = useState(muted);
@@ -312,7 +313,11 @@ export default function VideoPlayer({
       });
 
       hls.on(Hls.Events.LEVEL_SWITCHED, (_, data) => {
-        setCurrentQuality(data.level);
+        // Only update from LEVEL_SWITCHED if user hasn't manually selected a quality
+        // or if the switched level matches what the user selected
+        if (userSelectedQualityRef.current === null || userSelectedQualityRef.current === -1) {
+          setCurrentQuality(data.level);
+        }
       });
 
       let networkErrorCount = 0;
@@ -584,6 +589,7 @@ export default function VideoPlayer({
   const changeQuality = (levelIndex: number) => {
     if (hlsRef.current) {
       hlsRef.current.nextLevel = levelIndex;
+      userSelectedQualityRef.current = levelIndex; // Track user's manual selection
       setCurrentQuality(levelIndex);
     }
     setShowQualityMenu(false);
