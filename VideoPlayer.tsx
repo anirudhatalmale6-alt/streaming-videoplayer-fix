@@ -832,7 +832,11 @@ export default function VideoPlayer({
                 title="Quality"
               >
                 <Settings className="w-5 h-5" />
-                <span className="text-sm hidden sm:inline">
+                <span className={`text-sm hidden sm:inline ${
+                  displayQuality !== -1 && qualities.find(q => q.index === displayQuality)?.height >= 2160
+                    ? 'text-red-500 font-semibold'
+                    : ''
+                }`}>
                   {displayQuality === -1
                     ? 'Auto'
                     : qualities.length > 0
