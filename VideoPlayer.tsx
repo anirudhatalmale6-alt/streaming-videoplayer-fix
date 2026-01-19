@@ -292,6 +292,7 @@ export default function VideoPlayer({
           height: level.height,
           index,
         }));
+        console.log('HLS Levels parsed:', levels);
         setQualities(levels);
 
         if (autoPlay) {
@@ -861,22 +862,21 @@ export default function VideoPlayer({
                   {qualities.length > 0 ? (
                     [...qualities]
                       .sort((a, b) => b.height - a.height)
-                      .map((q, sortedIndex) => {
-                        // Find the actual HLS level index for this height
-                        const hlsLevelIndex = qualities.findIndex(level => level.height === q.height);
-                        return (
-                          <button
-                            key={`quality-${q.height}`}
-                            onClick={() => changeQuality(hlsLevelIndex, q.height)}
-                            className={`w-full px-4 py-2 text-left text-sm hover:bg-gray-700 flex items-center justify-between ${
-                              displayHeight === q.height ? 'text-red-500' : 'text-white'
-                            }`}
-                          >
-                            {getQualityLabel(q.height)}
-                            {displayHeight === q.height && <span className="text-xs">✓</span>}
-                          </button>
-                        );
-                      })
+                      .map((q) => (
+                        <button
+                          key={`quality-${q.height}-${q.index}`}
+                          onClick={() => {
+                            console.log('Clicked quality:', q.height, 'HLS index:', q.index);
+                            changeQuality(q.index, q.height);
+                          }}
+                          className={`w-full px-4 py-2 text-left text-sm hover:bg-gray-700 flex items-center justify-between ${
+                            displayHeight === q.height ? 'text-red-500' : 'text-white'
+                          }`}
+                        >
+                          {getQualityLabel(q.height)}
+                          {displayHeight === q.height && <span className="text-xs">✓</span>}
+                        </button>
+                      ))
                   ) : (
                     <button
                       onClick={() => setShowQualityMenu(false)}
