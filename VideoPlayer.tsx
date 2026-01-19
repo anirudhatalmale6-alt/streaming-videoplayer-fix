@@ -54,6 +54,7 @@ export default function VideoPlayer({
   const [progress, setProgress] = useState(0);
   const [qualities, setQualities] = useState<{ height: number; index: number }[]>([]);
   const [currentQuality, setCurrentQuality] = useState(-1);
+  const [displayQuality, setDisplayQuality] = useState(-1); // What to show on gear icon (user's selection)
   const [showQualityMenu, setShowQualityMenu] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [viewerCount, setViewerCount] = useState<number>(0);
@@ -591,6 +592,7 @@ export default function VideoPlayer({
       hlsRef.current.nextLevel = levelIndex;
       userSelectedQualityRef.current = levelIndex; // Track user's manual selection
       setCurrentQuality(levelIndex);
+      setDisplayQuality(levelIndex); // Update what's shown on gear icon
     }
     setShowQualityMenu(false);
   };
@@ -831,10 +833,10 @@ export default function VideoPlayer({
               >
                 <Settings className="w-5 h-5" />
                 <span className="text-sm hidden sm:inline">
-                  {currentQuality === -1
+                  {displayQuality === -1
                     ? 'Auto'
                     : qualities.length > 0
-                    ? getQualityLabel(qualities.find(q => q.index === currentQuality)?.height || 1080)
+                    ? getQualityLabel(qualities.find(q => q.index === displayQuality)?.height || 1080)
                     : 'HD'}
                 </span>
               </button>
@@ -847,11 +849,11 @@ export default function VideoPlayer({
                   <button
                     onClick={() => changeQuality(-1)}
                     className={`w-full px-4 py-2 text-left text-sm hover:bg-gray-700 flex items-center justify-between ${
-                      currentQuality === -1 ? 'text-red-500' : 'text-white'
+                      displayQuality === -1 ? 'text-red-500' : 'text-white'
                     }`}
                   >
                     Auto
-                    {currentQuality === -1 && <span className="text-xs">✓</span>}
+                    {displayQuality === -1 && <span className="text-xs">✓</span>}
                   </button>
                   {qualities.length > 0 ? (
                     qualities
@@ -861,11 +863,11 @@ export default function VideoPlayer({
                           key={q.index}
                           onClick={() => changeQuality(q.index)}
                           className={`w-full px-4 py-2 text-left text-sm hover:bg-gray-700 flex items-center justify-between ${
-                            currentQuality === q.index ? 'text-red-500' : 'text-white'
+                            displayQuality === q.index ? 'text-red-500' : 'text-white'
                           }`}
                         >
                           {getQualityLabel(q.height)}
-                          {currentQuality === q.index && <span className="text-xs">✓</span>}
+                          {displayQuality === q.index && <span className="text-xs">✓</span>}
                         </button>
                       ))
                   ) : (
